@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using API.Errors;
 
 namespace API.Middleware;
@@ -23,7 +24,9 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
                 : new ApiException(context.Response.StatusCode, ex.Message, "Internal server error");
             
             var options = new JsonSerializerOptions{
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                 ReferenceHandler = ReferenceHandler.Preserve,  // Add this line to handle circular references
+                
             };
 
             var json = JsonSerializer.Serialize(response, options);
